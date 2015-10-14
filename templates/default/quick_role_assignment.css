@@ -1,0 +1,53 @@
+div.ilTableHeaderTitle {
+	padding-top: 0 !important;
+}
+
+form[name=sr_xqra_role] .ilTableOuter {
+	 border: none !important;
+}
+
+#xqra_courses {
+	background: none !important;
+}
+
+#xqra_courses .title_line td {
+	padding: 30px 0 7px 0;
+}
+
+#xqra_courses tr:first-child > td {
+	padding: 0px 0 7px 0 !important;
+}
+
+#xqra_courses .status_user {
+	font-weight: bold;
+}
+
+#xqra_courses .status_last_login {
+	float: right;
+}
+
+#xqra_courses .status_line {
+	background: #d3d3d3;
+}
+
+#xqra_courses .status_list_entry {
+	border-top: 1px solid darkgray;
+	border-bottom: 1px solid darkgray;
+}
+
+#xqra_courses .status_list_entry.odd {
+	background: #ededed;
+}
+
+#xqra_courses .status_list_entry img {
+	padding: 0 5px 0 0;
+}
+
+#xqra_courses .status_list_entry.offline {
+	/*background: #FFDFE1; */
+	text-decoration: line-through;
+}
+
+#xqra_courses .checkbox_field {
+	width: 20px;
+}

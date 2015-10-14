@@ -1,0 +1,20 @@
+plugin_title#:#Quick Role Assignment
+
+title_search_user#:#Search User
+filter_label_login#:#Login
+
+table_label_role#:#Role
+
+table_command_assign_roles#:#Change assignment
+table_command_cancel#:#Cancel
+user_status_line#:#User: %s (%s %s)
+table_label_role#:#Role
+
+
+admin_form_title#:#Settings
+admin_form_button_save#:#Save
+admin_form_button_cancel#:#Cancel
+admin_form_config_allowed_change_roles#:#Access Roles for Plugin-Interface
+admin_form_config_assignable_roles#:#Assignables Roles for Users
+admin_form_saved_config#:#Settings saved successfully
+admin_form_failed_config#:#Could not saved Settings
