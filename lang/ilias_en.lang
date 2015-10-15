@@ -10,6 +10,8 @@ table_command_cancel#:#Cancel
 user_status_line#:#User: %s (%s %s)
 table_label_role#:#Role
 
+message_roles_assigned#:#Role changes are assigned to users
+message_no_changes#:#No changes were made on Role-Assignments
 
 admin_form_title#:#Settings
 admin_form_button_save#:#Save

@@ -68,35 +68,46 @@ class srQuickRoleAssignmentModel {
 	}
 
 	public static function getAvailableRoles() {
-		$available_roles = srQuickRoleAssignmentConfig::get(srQuickRoleAssignmentConfig::F_ASSIGNABLE_ROLES);
+		$available_roles_config = srQuickRoleAssignmentConfig::get(srQuickRoleAssignmentConfig::F_ASSIGNABLE_ROLES);
 
+		// do not allow admin role
 		$role_labels = srQuickRoleAssignmentModel::getRolesByName(false);
-		foreach($available_roles as $key=>$role_id) {
+
+		$available_roles = array();
+		foreach($available_roles_config as $key=>$role_id) {
 			$available_roles[$role_id] = array('obj_id'=>$role_id, 'title'=>$role_labels[$role_id]);
 		}
 		return $available_roles;
 	}
 
-	public static function getRoleIds() {
-		global $rbacreview;
-
+	public static function getRoleIds($remove_admin_role = true) {
 		$role_ids = array();
-		foreach ($rbacreview->getRolesByFilter(ilRbacReview::FILTER_ALL) as $role) {
-			$role_ids[] = $role['obj_id'];
+		foreach (self::getRoles() as $role) {
+			if(!$remove_admin_role || $role['obj_id'] != SYSTEM_ROLE_ID) {
+				$role_ids[] = $role['obj_id'];
+			}
 		}
+		return $role_ids;
 	}
 
-	public static function getRolesByName($add_id = true) {
-		global $rbacreview;
-
+	public static function getRolesByName($add_id = true, $remove_admin_role = true) {
 		$opt = array();
-		foreach ($rbacreview->getRolesByFilter(ilRbacReview::FILTER_ALL) as $role) {
-			$entry = $role['title'];
-			$entry .= ($add_id)? ' (' . $role['obj_id'] . ')' : '';
+		foreach(self::getRoles() as $role) {
+			if(!$remove_admin_role || $role['obj_id'] != SYSTEM_ROLE_ID) {
+				$entry = $role['title'];
+				$entry .= ($add_id)? ' (' . $role['obj_id'] . ')' : '';
 
-			$opt[$role['obj_id']] = $entry;
+				$opt[$role['obj_id']] = $entry;
+			}
 		}
 		return $opt;
+	}
+
+	public static function getRoles() {
+		global $rbacreview;
+
+		$roles = $rbacreview->getRolesByFilter(ilRbacReview::FILTER_ALL_GLOBAL);
+		return array_merge($roles, $rbacreview->getRolesByFilter(ilRbacReview::FILTER_NOT_INTERNAL));
 	}
 
 	public static function getUserAssignments($usr_ids) {
@@ -107,12 +118,17 @@ class srQuickRoleAssignmentModel {
 		$query = "SELECT usr_id, rol_id FROM rbac_ua WHERE ".$ilDB->in("usr_id", $usr_ids,false, 'integer');
 
 		$res = $ilDB->query($query);
-		while($row = $ilDB->fetchObject($res))
+		while($role = $ilDB->fetchAssoc($res))
 		{
-			$role_arr[$row->usr_id][$row->rol_id] = $row->rol_id;
+			// remove admin roles
+			if($role['rol_id'] != SYSTEM_ROLE_ID) {
+				$role_arr[$role['usr_id']][$role['rol_id']] = $role['rol_id'];
+			}
 		}
 		return $role_arr;
 	}
+
+	// HELPERS
 
 	public static function mergeDefaultOptions(array $options, array $defaults = array()) {
 

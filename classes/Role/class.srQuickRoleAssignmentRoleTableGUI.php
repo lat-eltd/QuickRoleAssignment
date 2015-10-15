@@ -138,6 +138,7 @@ class srQuickRoleAssignmentRoleTableGUI extends ilTable2GUI {
 		$item = new ilTextInputGUI($this->pl->txt('filter_label_login'), 'login');
 		$this->addFilterItem($item);
 		$item->readFromSession();
+		$this->filter['login'] = $item->getValue();
 	}
 
 	public function getTableColumns() {
@@ -193,13 +194,13 @@ class srQuickRoleAssignmentRoleTableGUI extends ilTable2GUI {
 
 				$user_assigned = isset($a_set['role_assignments'][$role['obj_id']]);
 
-				$check_box = new ilCheckboxInputGUI('', 'id['.$a_set['usr_id'].'][]');
-				$check_box->setValue($role['obj_id']);
+				$hidden_user_input = '<input type="hidden" name="user_id[]" value="'.htmlspecialchars($a_set['usr_id']).'" />';
 
-				if($user_assigned)
-					$check_box->setChecked(true);
+				$check_box = '<input type="checkbox" name="id['.htmlspecialchars($a_set['usr_id']).'][]" value="'.htmlspecialchars($role['obj_id']).'" ';
+				$check_box .= ($user_assigned)? 'checked="checked" ' : '';
+				$check_box .= ' />';
 
-				$this->tpl->setVariable('CHECK_BOX', $check_box->render());
+				$this->tpl->setVariable('FORM_DATA', $check_box.$hidden_user_input);
 
 				$this->tpl->parseCurrentBlock();
 				$odd = !$odd;
@@ -211,39 +212,6 @@ class srQuickRoleAssignmentRoleTableGUI extends ilTable2GUI {
 			$this->tpl->setVariable('ROLE', $this->pl->txt('no_roles_available'));
 			$this->tpl->parseCurrentBlock();
 		}
-
-		/*		foreach ($this->getTableColumns() as $k => $v) {
-					switch($k) {
-						case 'id':
-							$this->tpl->setCurrentBlock("checkb");
-							$this->tpl->setVariable("ID", $a_set["role_id"]);
-							$this->tpl->parseCurrentBlock();
-							break;
-						default:
-							if ($a_set[$k] != '') {
-								$this->tpl->setCurrentBlock('td');
-								$this->tpl->setVariable('VALUE', (is_array($a_set[$k]) ? implode(", ", $a_set[$k]) : $a_set[$k]));
-								$this->tpl->parseCurrentBlock();
-							} else {
-								$this->tpl->setCurrentBlock('td');
-								$this->tpl->setVariable('VALUE', '&nbsp;');
-								$this->tpl->parseCurrentBlock();
-							}
-							break;
-					}
-			}
-
-
-
-		$this->ctrl->setParameterByClass('srlearningprogresslookupstatusgui', 'course_ref_id', $a_set['ref_id']);
-			$link_target = $this->ctrl->getLinkTargetByClass('srlearningprogresslookupstatusgui');
-
-			$this->tpl->setCurrentBlock("cmd");
-			$this->tpl->setVariable("CMD", $link_target);
-			$this->tpl->setVariable("CMD_TXT", $this->pl->txt('table_label_lookup'));
-			$this->tpl->parseCurrentBlock();*/
-
-		//$this->tpl->setVariable('ACTIONS', '&nbsp;');
 	}
 
 	/**

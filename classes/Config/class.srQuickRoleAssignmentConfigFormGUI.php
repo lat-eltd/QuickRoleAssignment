@@ -51,16 +51,14 @@ class srQuickRoleAssignmentConfigFormGUI extends ilPropertyFormGUI {
 
         $this->setTitle($this->txt('title'));
 
-        $opt = srQuickRoleAssignmentModel::getRolesByName();
-
         $se = new ilMultiSelectInputGUI($this->txt('config_allowed_change_roles'), srQuickRoleAssignmentConfig::F_ADMIN_ROLES);
         $se->setWidth(400);
-        $se->setOptions($opt);
+        $se->setOptions(srQuickRoleAssignmentModel::getRolesByName(true, false));
         $this->addItem($se);
 
         $se = new ilMultiSelectInputGUI($this->txt('config_assignable_roles'), srQuickRoleAssignmentConfig::F_ASSIGNABLE_ROLES);
         $se->setWidth(400);
-        $se->setOptions($opt);
+        $se->setOptions(srQuickRoleAssignmentModel::getRolesByName());
         $this->addItem($se);
 
 	    $this->addCommandButtons();

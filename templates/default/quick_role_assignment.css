@@ -51,3 +51,7 @@ form[name=sr_xqra_role] .ilTableOuter {
 #xqra_courses .checkbox_field {
 	width: 20px;
 }
+
+table#xqra_courses  {
+	margin:20px 0;
+}

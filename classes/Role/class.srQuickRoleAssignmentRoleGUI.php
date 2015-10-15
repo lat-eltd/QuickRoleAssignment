@@ -85,7 +85,6 @@ class srQuickRoleAssignmentRoleGUI {
 
 
 	public function index() {
-		//$this->toolbar->addButton($this->pl->txt('new_role'), $this->ctrl->getLinkTargetByClass("ilTrainingProgramRoleGUI", 'newRole'));
         $this->table = new srQuickRoleAssignmentRoleTableGUI($this);
 		$this->tpl->setContent($this->table->getHTML());
 	}
@@ -109,18 +108,21 @@ class srQuickRoleAssignmentRoleGUI {
 	public function assignRoles() {
 		global $rbacreview, $rbacadmin;
 
-		if(!isset($_POST['id']) && !is_array($_POST['id'])) {
+		if(!isset($_POST['id']) && !isset($_POST['user_id'])) {
 			throw new ilException("Error in role assigning request!");
 		}
 
-		/*$current_roles = srQuickRoleAssignmentModel::getUserAssignments(array_keys($_POST['id']));
+		$current_roles = srQuickRoleAssignmentModel::getUserAssignments($_POST['user_id']);
 		$allowed_roles = array_keys(srQuickRoleAssignmentModel::getAvailableRoles());
 
-		$deassigned_roles = array();
-		var_dump("----");
-		var_dump($current_roles);
-		foreach($_POST['id'] as $user_id=>$roles) {
-			foreach($roles as $role_id=>$role_value) {
+		$deassigned_roles = $current_roles;
+		$role_changes = (is_array($_POST['id']))? $_POST['id'] : array();
+		$changes_made = false;
+
+		// add roles
+		foreach($role_changes as $user_id=>$roles) {
+			foreach($roles as $role_id) {
+				// only assign allowed roles!
 				if(!in_array($role_id, $allowed_roles)) {
 					throw new ilException("You try to set not an allowed role!");
 				}
@@ -128,25 +130,34 @@ class srQuickRoleAssignmentRoleGUI {
 				// assign only new users
 				if(!isset($current_roles[$user_id]) || !array_key_exists($role_id, $current_roles[$user_id])) {
 					$rbacadmin->assignUser($role_id, $user_id);
-					var_dump("ASSIGN!");
+					$changes_made = true;
 					continue;
 				} else if(isset($current_roles[$user_id]) && array_key_exists($role_id, $current_roles[$user_id])){
-					$deassigned_roles[$user_id][$role_id] = true;
+					// if assignment exists do not deassign
+					unset($deassigned_roles[$user_id][$role_id]);
+					if(count($deassigned_roles[$user_id]) == 0)
+						unset($deassigned_roles[$user_id]);
 				}
 			}
 		}
 
-		var_dump("deassigne roles:");
-		var_dump($deassigned_roles);
-
+		// remove roles
 		foreach($deassigned_roles as $user_id=>$roles) {
-			foreach($roles as $role_id=>$role_value) {
-				// deasign only new users
-				$rbacadmin->deassignUser($role_id, $user_id);
+			foreach($roles as $role_id) {
+				// only deassign allowed roles!
+				if(in_array($role_id, $allowed_roles)) {
+					$rbacadmin->deassignUser($role_id, $user_id);
+					$changes_made = true;
+				}
 			}
 		}
 
-		die();*/
+		if($changes_made) {
+			ilUtil::sendSuccess($this->pl->txt('message_roles_assigned'), true);
+		} else {
+			ilUtil::sendInfo($this->pl->txt('message_no_changes'), true);
+		}
+
 		$this->ctrl->redirect($this);
 	}
 
