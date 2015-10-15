@@ -1,8 +1,5 @@
 <?php
 
-require_once('./Services/Tracking/classes/class.ilLPCollections.php');
-require_once('./Services/Tracking/classes/class.ilLearningProgressBaseGUI.php');
-
 /**
  * Class srQuickRoleAssignmentModel
  *
@@ -13,27 +10,7 @@ class srQuickRoleAssignmentModel {
 	static $user_cache = array();
 
 	public static function getUsers(array $options = array()) {
-		global $ilDB, $rbacsystem;
-
-/*		ilUserQuery::getUserListData(
-			ilUtil::stripSlashes($this->getOrderField()),
-			ilUtil::stripSlashes($this->getOrderDirection()),
-			ilUtil::stripSlashes($this->getOffset()),
-			ilUtil::stripSlashes($this->getLimit()),
-			$this->filter["query"],
-			$this->filter["activation"],
-			$this->filter["last_login"],
-			$this->filter["limited_access"],
-			$this->filter["no_courses"],
-			$this->filter["course_group"],
-			$this->filter["global_role"],
-			$user_filter,
-			$additional_fields,
-			null,
-			ilUtil::stripSlashes($_GET["letter"])
-		);*/
-
-		//SELECT usr_data.usr_id,usr_data.login,usr_data.firstname,usr_data.lastname,usr_data.email,usr_data.time_limit_until,usr_data.time_limit_unlimited,usr_data.time_limit_owner,usr_data.last_login,usr_data.active FROM usr_data WHERE usr_data.usr_id <> 13 AND usr_data.time_limit_owner IN (7) ORDER BY usr_data.login ASC
+		global $ilDB;
 
 		if ($options['count']) {
 			$sql = 'SELECT COUNT(usr_data.usr_id) as count ';
@@ -41,10 +18,11 @@ class srQuickRoleAssignmentModel {
 			$sql = 'SELECT usr_data.usr_id,usr_data.login,usr_data.firstname,usr_data.lastname,usr_data.email,usr_data.time_limit_until,usr_data.time_limit_unlimited,usr_data.time_limit_owner,usr_data.last_login,usr_data.active ';
 		}
 
+		// show only global users
 		$sql .= "   FROM usr_data
-					WHERE usr_data.time_limit_owner IN (7) ";
+					WHERE usr_data.time_limit_owner = 7 ";
 
-
+		// allow comma-separated search with wildcards
 		if(strpos($options['filters']['login'], ',') !== false) {
 			$options['filters']['login'] = explode(',', $options['filters']['login']);
 		}
@@ -80,16 +58,6 @@ class srQuickRoleAssignmentModel {
 		return $available_roles;
 	}
 
-	public static function getRoleIds($remove_admin_role = true) {
-		$role_ids = array();
-		foreach (self::getRoles() as $role) {
-			if(!$remove_admin_role || $role['obj_id'] != SYSTEM_ROLE_ID) {
-				$role_ids[] = $role['obj_id'];
-			}
-		}
-		return $role_ids;
-	}
-
 	public static function getRolesByName($add_id = true, $remove_admin_role = true) {
 		$opt = array();
 		foreach(self::getRoles() as $role) {
@@ -120,7 +88,7 @@ class srQuickRoleAssignmentModel {
 		$res = $ilDB->query($query);
 		while($role = $ilDB->fetchAssoc($res))
 		{
-			// remove admin roles
+			// only non admin roles
 			if($role['rol_id'] != SYSTEM_ROLE_ID) {
 				$role_arr[$role['usr_id']][$role['rol_id']] = $role['rol_id'];
 			}
