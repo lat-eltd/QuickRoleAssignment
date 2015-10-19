@@ -55,3 +55,7 @@ form[name=sr_xqra_role] .ilTableOuter {
 table#xqra_courses  {
 	margin:20px 0;
 }
+
+.role_description {
+	font-style: italic;
+}

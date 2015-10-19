@@ -115,7 +115,7 @@ class srQuickRoleAssignmentRoleTableGUI extends ilTable2GUI {
 		$data = srQuickRoleAssignmentModel::getUsers($options);
 
 		$user_assignments = srQuickRoleAssignmentModel::getUserAssignments(array_keys($data));
-		$available_roles = srQuickRoleAssignmentModel::getAvailableRoles();
+		$available_roles = srQuickRoleAssignmentModel::getAvailableRoles(true);
 
 		$this->setMaxCount($count);
 
@@ -190,7 +190,7 @@ class srQuickRoleAssignmentRoleTableGUI extends ilTable2GUI {
 				$css_class .= ($odd) ? "odd " : "even ";
 				$this->tpl->setVariable('CSS_CLASS', $css_class);
 
-				$this->tpl->setVariable('ROLE', $role['title']);
+				$this->tpl->setVariable('ROLE', $role['title'].'<div class="role_description">'.$role['description'].'</div>');
 
 				$user_assigned = isset($a_set['role_assignments'][$role['obj_id']]);
 

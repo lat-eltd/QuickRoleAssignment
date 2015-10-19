@@ -45,30 +45,39 @@ class srQuickRoleAssignmentModel {
 		}
 	}
 
-	public static function getAvailableRoles() {
+	public static function getAvailableRoles($show_role_description = false) {
 		$available_roles_config = srQuickRoleAssignmentConfig::get(srQuickRoleAssignmentConfig::F_ASSIGNABLE_ROLES);
 
 		// do not allow admin role
-		$role_labels = srQuickRoleAssignmentModel::getRolesByName(false);
+		$role_labels = srQuickRoleAssignmentModel::getRoleDefinitions(false);
 
 		$available_roles = array();
 		foreach($available_roles_config as $key=>$role_id) {
-			$available_roles[$role_id] = array('obj_id'=>$role_id, 'title'=>$role_labels[$role_id]);
+			$available_roles[$role_id] = array('obj_id'=>$role_id, 'title'=>$role_labels[$role_id]['title'], 'description'=>$role_labels[$role_id]['description']);
 		}
 		return $available_roles;
 	}
 
-	public static function getRolesByName($add_id = true, $remove_admin_role = true) {
+	public static function getRoleDefinitions($add_id = true, $remove_admin_role = true) {
 		$opt = array();
 		foreach(self::getRoles() as $role) {
 			if(!$remove_admin_role || $role['obj_id'] != SYSTEM_ROLE_ID) {
 				$entry = $role['title'];
 				$entry .= ($add_id)? ' (' . $role['obj_id'] . ')' : '';
 
-				$opt[$role['obj_id']] = $entry;
+				$opt[$role['obj_id']] = array('title'=>$entry, 'description'=>$role['desc']);
 			}
 		}
 		return $opt;
+	}
+
+	public static function getRoleNames($add_role_id = true, $remove_admin_role = true) {
+		$roles = self::getRoleDefinitions($add_role_id, $remove_admin_role);
+		$out = array();
+		foreach($roles as $role_id=>$role_definition) {
+			$out[$role_id] = $role_definition['title'];
+		}
+		return $out;
 	}
 
 	public static function getRoles() {
