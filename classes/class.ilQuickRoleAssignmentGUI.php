@@ -42,7 +42,7 @@ class ilQuickRoleAssignmentGUI {
 
 
 	public function executeCommand() {
-		$cmd = $this->ctrl->getCmd();
+		$this->tpl->getStandardTemplate();
 
 		$this->tpl->addCss($this->pl->getStyleSheetLocation("default/quick_role_assignment.css"));
 
@@ -66,6 +66,7 @@ class ilQuickRoleAssignmentGUI {
 				$this->ctrl->forwardCommand($gui);
 				break;
 		}
+		$this->tpl->show();
 
 		return true;
 	}
