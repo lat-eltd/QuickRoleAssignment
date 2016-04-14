@@ -5,19 +5,22 @@ require_once("./Customizing/global/plugins/Services/UIComponent/UserInterfaceHoo
 /**
  * ilQuickRoleAssignmentAccess
  *
- * @author Michael Herren <mh@studer-raimann.ch>
+ * @author   Michael Herren <mh@studer-raimann.ch>
  * @version  1.0.0
-*/
-
+ */
 class ilQuickRoleAssignmentAccess {
+
 	protected static $instance;
 
+
 	public static function getInstance() {
-		if(is_null(self::$instance)) {
+		if (is_null(self::$instance)) {
 			self::$instance = new self();
 		}
+
 		return self::$instance;
 	}
+
 
 	public function hasCurrentUserViewPermission() {
 		global $ilUser, $rbacreview;
@@ -26,5 +29,4 @@ class ilQuickRoleAssignmentAccess {
 
 		return $rbacreview->isAssignedToAtLeastOneGivenRole($ilUser->getId(), $required_role);
 	}
-	
 }

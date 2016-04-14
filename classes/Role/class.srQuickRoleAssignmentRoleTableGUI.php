@@ -24,19 +24,16 @@ class srQuickRoleAssignmentRoleTableGUI extends ilTable2GUI {
 	/** @var  array $filter */
 	protected $filter = array();
 	protected $access;
-
 	protected $ignored_cols;
-
-	/** @var bool  */
-	protected  $show_default_filter = false;
-
-	/** @var array  */
-	protected  $numeric_fields = array("course_id");
+	/** @var bool */
+	protected $show_default_filter = false;
+	/** @var array */
+	protected $numeric_fields = array( "course_id" );
 
 
 	/**
-	 * @param srQuickRoleAssignmentRoleGUI  $parent_obj
-	 * @param string                        $parent_cmd
+	 * @param srQuickRoleAssignmentRoleGUI $parent_obj
+	 * @param string $parent_cmd
 	 */
 	public function __construct($parent_obj, $parent_cmd = "index") {
 		/** @var $ilCtrl ilCtrl */
@@ -48,7 +45,7 @@ class srQuickRoleAssignmentRoleTableGUI extends ilTable2GUI {
 		$this->access = $this->pl->getAccessManager();
 		$this->toolbar = $ilToolbar;
 
-		if(!$ilCtrl->getCmd()) {
+		if (!$ilCtrl->getCmd()) {
 			$this->setShowDefaultFilter(true);
 		}
 
@@ -69,7 +66,7 @@ class srQuickRoleAssignmentRoleTableGUI extends ilTable2GUI {
 		$this->setDisableFilterHiding(true);
 		$this->setEnableNumInfo(true);
 
-		$this->setIgnoredCols(array(''));
+		$this->setIgnoredCols(array( '' ));
 		$this->setTitle($this->pl->txt('title_search_user'));
 
 		$this->setSelectAllCheckbox("id[]");
@@ -77,19 +74,17 @@ class srQuickRoleAssignmentRoleTableGUI extends ilTable2GUI {
 		$this->setEnableAllCommand(false);
 		$this->setSelectAllCheckbox('');
 
-
 		$cmds = $parent_obj->getRoleMultiCommands();
-		foreach($cmds as $cmd => $caption)
-		{
+		foreach ($cmds as $cmd => $caption) {
 			$this->addMultiCommand($cmd, $caption);
 		}
 		$this->addCommandButton('cancel', $this->pl->txt('table_command_cancel'));
 
 		$this->initFilter();
 		$this->addColumns();
-        if (!in_array($parent_cmd, array('applyFilter', 'resetFilter'))) {
-            $this->parseData();
-        }
+		if (!in_array($parent_cmd, array( 'applyFilter', 'resetFilter' ))) {
+			$this->parseData();
+		}
 	}
 
 
@@ -104,9 +99,9 @@ class srQuickRoleAssignmentRoleTableGUI extends ilTable2GUI {
 
 		$options = array(
 			'filters' => $this->filter,
-			'limit' => array(),
-			'count' => true,
-			'sort' => array( 'field' => $this->getOrderField(), 'direction' => $this->getOrderDirection() ),
+			'limit'   => array(),
+			'count'   => true,
+			'sort'    => array( 'field' => $this->getOrderField(), 'direction' => $this->getOrderDirection() ),
 		);
 		$count = srQuickRoleAssignmentModel::getUsers($options);
 
@@ -133,6 +128,7 @@ class srQuickRoleAssignmentRoleTableGUI extends ilTable2GUI {
 		$this->setData($rows);
 	}
 
+
 	public function initFilter() {
 		// Login
 		$item = new ilTextInputGUI($this->pl->txt('filter_label_login'), 'login');
@@ -141,11 +137,12 @@ class srQuickRoleAssignmentRoleTableGUI extends ilTable2GUI {
 		$this->filter['login'] = $item->getValue();
 	}
 
+
 	public function getTableColumns() {
 		$cols = array();
 
-		$cols['id'] = array( 'txt' => '', 'default' => true, 'width' => '5');
-		$cols['role'] = array( 'txt' => null, 'default' => true, 'width' => 'auto');
+		$cols['id'] = array( 'txt' => '', 'default' => true, 'width' => '5' );
+		$cols['role'] = array( 'txt' => null, 'default' => true, 'width' => 'auto' );
 
 		return $cols;
 	}
@@ -164,11 +161,12 @@ class srQuickRoleAssignmentRoleTableGUI extends ilTable2GUI {
 			if (isset($v['sort_field'])) {
 				$sort = $v['sort_field'];
 			} else {
-				$sort = NULL;
+				$sort = null;
 			}
 			$this->addColumn($v['txt'], $sort, $v['width']);
 		}
 	}
+
 
 	/**
 	 * @param array $a_set
@@ -181,7 +179,7 @@ class srQuickRoleAssignmentRoleTableGUI extends ilTable2GUI {
 		$this->tpl->setVariable('ROLE', $this->pl->txt('table_label_role'));
 		$this->tpl->parseCurrentBlock();
 
-		if(count($a_set['roles']) > 0) {
+		if (count($a_set['roles']) > 0) {
 			$odd = true;
 			foreach ($a_set['roles'] as $key => $role) {
 				$this->tpl->setCurrentBlock('user_tr');
@@ -190,17 +188,18 @@ class srQuickRoleAssignmentRoleTableGUI extends ilTable2GUI {
 				$css_class .= ($odd) ? "odd " : "even ";
 				$this->tpl->setVariable('CSS_CLASS', $css_class);
 
-				$this->tpl->setVariable('ROLE', $role['title'].'<div class="role_description">'.$role['description'].'</div>');
+				$this->tpl->setVariable('ROLE', $role['title'] . '<div class="role_description">' . $role['description'] . '</div>');
 
 				$user_assigned = isset($a_set['role_assignments'][$role['obj_id']]);
 
-				$hidden_user_input = '<input type="hidden" name="user_id[]" value="'.htmlspecialchars($a_set['usr_id']).'" />';
+				$hidden_user_input = '<input type="hidden" name="user_id[]" value="' . htmlspecialchars($a_set['usr_id']) . '" />';
 
-				$check_box = '<input type="checkbox" name="id['.htmlspecialchars($a_set['usr_id']).'][]" value="'.htmlspecialchars($role['obj_id']).'" ';
-				$check_box .= ($user_assigned)? 'checked="checked" ' : '';
+				$check_box = '<input type="checkbox" name="id[' . htmlspecialchars($a_set['usr_id']) . '][]" value="'
+				             . htmlspecialchars($role['obj_id']) . '" ';
+				$check_box .= ($user_assigned) ? 'checked="checked" ' : '';
 				$check_box .= ' />';
 
-				$this->tpl->setVariable('FORM_DATA', $check_box.$hidden_user_input);
+				$this->tpl->setVariable('FORM_DATA', $check_box . $hidden_user_input);
 
 				$this->tpl->parseCurrentBlock();
 				$odd = !$odd;
@@ -213,6 +212,7 @@ class srQuickRoleAssignmentRoleTableGUI extends ilTable2GUI {
 			$this->tpl->parseCurrentBlock();
 		}
 	}
+
 
 	/**
 	 * @param array $formats
@@ -246,10 +246,11 @@ class srQuickRoleAssignmentRoleTableGUI extends ilTable2GUI {
 		}
 	}
 
+
 	/**
 	 * @param object $a_worksheet
-	 * @param int    $a_row
-	 * @param array  $a_set
+	 * @param int $a_row
+	 * @param array $a_set
 	 */
 	protected function fillRowExcel($a_worksheet, &$a_row, $a_set) {
 		$col = 0;
@@ -265,26 +266,25 @@ class srQuickRoleAssignmentRoleTableGUI extends ilTable2GUI {
 		}
 	}
 
-	protected function fillHeaderExcel($worksheet, &$a_row)
-	{
+
+	protected function fillHeaderExcel($worksheet, &$a_row) {
 		$col = 0;
-		foreach ($this->getSelectableColumns() as $column_key => $column)
-		{
+		foreach ($this->getSelectableColumns() as $column_key => $column) {
 			$title = strip_tags($column["txt"]);
-			if(!in_array($column_key, $this->getIgnoredCols()) && $title != '')
-			{
+			if (!in_array($column_key, $this->getIgnoredCols()) && $title != '') {
 				if ($this->isColumnSelected($column_key)) {
 					$worksheet->write($a_row, $col, $title);
-					$col++;
+					$col ++;
 				}
 			}
 		}
-		$a_row++;
+		$a_row ++;
 	}
+
 
 	/**
 	 * @param object $a_csv
-	 * @param array  $a_set
+	 * @param array $a_set
 	 */
 	protected function fillRowCSV($a_csv, $a_set) {
 
@@ -338,6 +338,7 @@ class srQuickRoleAssignmentRoleTableGUI extends ilTable2GUI {
 	public function getIgnoredCols() {
 		return $this->ignored_cols;
 	}
+
 
 	/**
 	 * @param boolean $default_filter

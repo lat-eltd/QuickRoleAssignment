@@ -6,8 +6,8 @@ require_once("./Customizing/global/plugins/Services/UIComponent/UserInterfaceHoo
 /**
  * GUI-Class ilQuickRoleAssignmentGUI
  *
- * @author Michael Herren <mh@studer-raimann.ch>
- * @version 1.0.0
+ * @author            Michael Herren <mh@studer-raimann.ch>
+ * @version           1.0.0
  *
  * @ilCtrl_IsCalledBy ilQuickRoleAssignmentGUI: ilRouterGUI, ilUIPluginRouterGUI
  * @ilCtrl_Calls      ilQuickRoleAssignmentGUI: srQuickRoleAssignmentRoleGUI
@@ -15,12 +15,12 @@ require_once("./Customizing/global/plugins/Services/UIComponent/UserInterfaceHoo
 class ilQuickRoleAssignmentGUI {
 
 	const RELOAD_LANGUAGES = false;
-
 	protected $tpl;
 	protected $ctrl;
 	protected $tabs;
 	protected $lng;
 	protected $access;
+
 
 	public function __construct() {
 		global $tpl, $ilCtrl, $ilTabs, $lng;
@@ -47,9 +47,10 @@ class ilQuickRoleAssignmentGUI {
 		$this->tpl->addCss($this->pl->getStyleSheetLocation("default/quick_role_assignment.css"));
 
 		$next_class = $this->ctrl->getNextClass($this);
-		if (! $this->accessCheck($next_class)) {
+		if (!$this->accessCheck($next_class)) {
 			ilUtil::sendFailure($this->lng->txt("no_permission"), true);
 			ilUtil::redirect("");
+
 			return false;
 		}
 
@@ -77,9 +78,9 @@ class ilQuickRoleAssignmentGUI {
 				return $this->access->hasCurrentUserViewPermission();
 				break;
 		}
+
 		return false;
 	}
-
 }
 
 ?>
