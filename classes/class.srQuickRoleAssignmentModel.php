@@ -1,5 +1,5 @@
 <?php
-
+use srag\DIC\DICTrait;
 /**
  * Class srQuickRoleAssignmentModel
  *
@@ -11,7 +11,11 @@ class srQuickRoleAssignmentModel {
 	static $user_cache = array();
 
 
-	public static function getUsers(array $options = array()) {
+    /**
+     * @param array $options
+     * @return array
+     */
+    public static function getUsers(array $options = array()) {
 		global $ilDB;
 
 		if ($options['count']) {
@@ -50,8 +54,12 @@ class srQuickRoleAssignmentModel {
 	}
 
 
-	public static function getAvailableRoles($show_role_description = false) {
-		$available_roles_config = srQuickRoleAssignmentConfig::get(srQuickRoleAssignmentConfig::F_ASSIGNABLE_ROLES);
+    /**
+     * @param bool $show_role_description
+     * @return array
+     */
+    public static function getAvailableRoles($show_role_description = false) {
+		$available_roles_config = srQuickRoleAssignmentConfig::getConfig(srQuickRoleAssignmentConfig::F_ASSIGNABLE_ROLES);
 
 		// do not allow admin role
 		$role_labels = srQuickRoleAssignmentModel::getRoleDefinitions(false);
@@ -68,7 +76,12 @@ class srQuickRoleAssignmentModel {
 	}
 
 
-	public static function getRoleDefinitions($add_id = true, $remove_admin_role = true) {
+    /**
+     * @param bool $add_id
+     * @param bool $remove_admin_role
+     * @return array
+     */
+    public static function getRoleDefinitions($add_id = true, $remove_admin_role = true) {
 		$opt = array();
 		foreach (self::getRoles() as $role) {
 			if (!$remove_admin_role || $role['obj_id'] != SYSTEM_ROLE_ID) {
@@ -83,7 +96,12 @@ class srQuickRoleAssignmentModel {
 	}
 
 
-	public static function getRoleNames($add_role_id = true, $remove_admin_role = true) {
+    /**
+     * @param bool $add_role_id
+     * @param bool $remove_admin_role
+     * @return array
+     */
+    public static function getRoleNames($add_role_id = true, $remove_admin_role = true) {
 		$roles = self::getRoleDefinitions($add_role_id, $remove_admin_role);
 		$out = array();
 		foreach ($roles as $role_id => $role_definition) {
@@ -94,7 +112,10 @@ class srQuickRoleAssignmentModel {
 	}
 
 
-	public static function getRoles() {
+    /**
+     * @return array
+     */
+    public static function getRoles() {
 		global $rbacreview;
 
 		$roles = $rbacreview->getRolesByFilter(ilRbacReview::FILTER_ALL_GLOBAL);
@@ -103,7 +124,11 @@ class srQuickRoleAssignmentModel {
 	}
 
 
-	public static function getUserAssignments($usr_ids) {
+    /**
+     * @param $usr_ids
+     * @return array
+     */
+    public static function getUserAssignments($usr_ids) {
 		global $ilDB;
 
 		$role_arr = array();
@@ -124,7 +149,12 @@ class srQuickRoleAssignmentModel {
 
 	// HELPERS
 
-	public static function mergeDefaultOptions(array $options, array $defaults = array()) {
+    /**
+     * @param array $options
+     * @param array $defaults
+     * @return array
+     */
+    public static function mergeDefaultOptions(array $options, array $defaults = array()) {
 
 		$_options = (count($defaults) > 0) ? $defaults : array(
 			'filters'            => array(),
@@ -138,7 +168,14 @@ class srQuickRoleAssignmentModel {
 	}
 
 
-	public static function parseWhereQuery($filters, $valid_params = false, $first = false, $op = "AND") {
+    /**
+     * @param $filters
+     * @param bool $valid_params
+     * @param bool $first
+     * @param string $op
+     * @return string
+     */
+    public static function parseWhereQuery($filters, $valid_params = false, $first = false, $op = "AND") {
 		global $ilDB;
 
 		// allow filtering with *
@@ -188,7 +225,11 @@ class srQuickRoleAssignmentModel {
 	}
 
 
-	public static function parseDefaultQueryOptions($options) {
+    /**
+     * @param $options
+     * @return string
+     */
+    public static function parseDefaultQueryOptions($options) {
 		$sql = "";
 		if (isset($options['sort']['field']) && isset($options['sort']['direction'])) {
 			$sql .= " ORDER BY " . $options['sort']['field'] . " " . $options['sort']['direction'];

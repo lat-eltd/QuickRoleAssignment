@@ -1,7 +1,6 @@
 <?php
-require_once('./Services/Component/classes/class.ilPluginConfigGUI.php');
-require_once('./Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/QuickRoleAssignment/classes/class.ilQuickRoleAssignmentPlugin.php');
-require_once('./Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/QuickRoleAssignment/classes/Config/class.srQuickRoleAssignmentConfigFormGUI.php');
+require_once __DIR__ . "/../vendor/autoload.php";
+use srag\DIC\DICTrait;
 
 /**
  * Class ilQuickRoleAssignmentConfigGUI
@@ -11,30 +10,26 @@ require_once('./Customizing/global/plugins/Services/UIComponent/UserInterfaceHoo
  */
 class ilQuickRoleAssignmentConfigGUI extends ilPluginConfigGUI {
 
+    use DICTrait;
+
+    const PLUGIN_CLASS_NAME = ilQuickRoleAssignmentPlugin::class;
+
 	const CMD_DEFAULT = 'index';
 	const CMD_SAVE = 'save';
 	const CMD_CANCEL = 'cancel';
-	/**
-	 * @var ilCtrl
-	 */
-	protected $ctrl;
-	/**
-	 * @var ilTemplate
-	 */
-	protected $tpl;
-	protected $pl;
+
+    /**
+     * ilQuickRoleAssignmentConfigGUI constructor.
+     */
+    public function __construct() {
+
+    }
 
 
-	public function __construct() {
-		global $tpl, $ilCtrl;
-
-		$this->tpl = $tpl;
-		$this->ctrl = $ilCtrl;
-		$this->pl = ilQuickRoleAssignmentPlugin::getInstance();
-	}
-
-
-	public function performCommand($cmd) {
+    /**
+     * @param $cmd
+     */
+    public function performCommand($cmd) {
 		if ($cmd == 'configure') {
 			$cmd = self::CMD_DEFAULT;
 		}
@@ -48,36 +43,48 @@ class ilQuickRoleAssignmentConfigGUI extends ilPluginConfigGUI {
 	}
 
 
-	public function index() {
+    /**
+     *
+     */
+    public function index() {
 		$config_form_gui = $this->initForm();
 		$config_form_gui->fillForm();
 
-		$this->tpl->setContent($config_form_gui->getHTML());
+		self::dic()->template()->setContent($config_form_gui->getHTML());
 	}
 
 
-	public function cancel() {
-		$this->ctrl->redirect($this, self::CMD_DEFAULT);
+    /**
+     *
+     */
+    public function cancel() {
+		self::dic()->ctrl()->redirect($this, self::CMD_DEFAULT);
 	}
 
 
-	protected function initForm() {
+    /**
+     * @return srQuickRoleAssignmentConfigFormGUI
+     */
+    protected function initForm() {
 		return new srQuickRoleAssignmentConfigFormGUI($this);
 	}
 
 
-	protected function save() {
+    /**
+     *
+     */
+    protected function save() {
 		$config_form_gui = $this->initForm();
 		$config_form_gui->setValuesByPost();
 
 		if ($config_form_gui->saveObject()) {
-			ilUtil::sendSuccess($this->pl->txt("admin_form_saved_config"), true);
-			$this->ctrl->redirect($this, self::CMD_DEFAULT);
+			ilUtil::sendSuccess(self::plugin()->translate("admin_form_saved_config"), true);
+			self::dic()->ctrl()->redirect($this, self::CMD_DEFAULT);
 		} else {
-			ilUtil::sendFailure($this->pl->txt("admin_form_failed_config"));
+			ilUtil::sendFailure(self::plugin()->translate("admin_form_failed_config"));
 		}
 
-		$this->tpl->setContent($config_form_gui->getHTML());
+		self::dic()->template()->setContent($config_form_gui->getHTML());
 	}
 }
 

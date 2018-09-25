@@ -1,10 +1,5 @@
 <?php
-require_once('./Services/Form/classes/class.ilPropertyFormGUI.php');
-require_once('./Services/Form/classes/class.ilMultiSelectInputGUI.php');
-require_once('./Services/Form/classes/class.ilRoleAutoCompleteInputGUI.php');
-require_once('class.srQuickRoleAssignmentConfig.php');
-require_once('./Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/QuickRoleAssignment/classes/class.srQuickRoleAssignmentModel.php');
-
+use srag\DIC\DICTrait;
 /**
  * Class srQuickRoleAssignmentConfigFormGUI
  *
@@ -13,25 +8,21 @@ require_once('./Customizing/global/plugins/Services/UIComponent/UserInterfaceHoo
  */
 class srQuickRoleAssignmentConfigFormGUI extends ilPropertyFormGUI {
 
-	/**
+    use DICTrait;
+
+    const PLUGIN_CLASS_NAME = ilQuickRoleAssignmentPlugin::class;
+
+    /**
 	 * @var
 	 */
 	protected $parent_gui;
-	/**
-	 * @var  ilCtrl
-	 */
-	protected $ctrl;
-
 
 	/**
 	 * @param  $parent_gui
 	 */
 	public function __construct($parent_gui) {
-		global $ilCtrl;
 		$this->parent_gui = $parent_gui;
-		$this->ctrl = $ilCtrl;
-		$this->pl = ilQuickRoleAssignmentPlugin::getInstance();
-		$this->setFormAction($this->ctrl->getFormAction($this->parent_gui));
+		$this->setFormAction(self::dic()->ctrl()->getFormAction($this->parent_gui));
 		$this->initForm();
 	}
 
@@ -42,11 +33,14 @@ class srQuickRoleAssignmentConfigFormGUI extends ilPropertyFormGUI {
 	 * @return string
 	 */
 	public function txt($field) {
-		return $this->pl->txt('admin_form_' . $field);
+		return self::plugin()->translate('admin_form_' . $field);
 	}
 
 
-	protected function initForm() {
+    /**
+     *
+     */
+    protected function initForm() {
 		global $rbacreview, $ilUser;
 
 		$this->setTitle($this->txt('title'));
@@ -65,7 +59,10 @@ class srQuickRoleAssignmentConfigFormGUI extends ilPropertyFormGUI {
 	}
 
 
-	public function fillForm() {
+    /**
+     *
+     */
+    public function fillForm() {
 		$array = array();
 		foreach ($this->getItems() as $item) {
 			$this->getValuesForItem($item, $array);
@@ -83,7 +80,7 @@ class srQuickRoleAssignmentConfigFormGUI extends ilPropertyFormGUI {
 	private function getValuesForItem($item, &$array) {
 		if (self::checkItem($item)) {
 			$key = $item->getPostVar();
-			$array[$key] = srQuickRoleAssignmentConfig::get($key);
+			$array[$key] = srQuickRoleAssignmentConfig::getConfig($key);
 			if (self::checkForSubItem($item)) {
 				foreach ($item->getSubItems() as $subitem) {
 					$this->getValuesForItem($subitem, $array);
@@ -146,8 +143,11 @@ class srQuickRoleAssignmentConfigFormGUI extends ilPropertyFormGUI {
 	}
 
 
-	protected function addCommandButtons() {
-		$this->addCommandButton('save', $this->pl->txt('admin_form_button_save'));
-		$this->addCommandButton('cancel', $this->pl->txt('admin_form_button_cancel'));
+    /**
+     *
+     */
+    protected function addCommandButtons() {
+		$this->addCommandButton('save', self::plugin()->translate('admin_form_button_save'));
+		$this->addCommandButton('cancel', self::plugin()->translate('admin_form_button_cancel'));
 	}
 }

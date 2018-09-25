@@ -1,8 +1,5 @@
 <?php
 /* Copyright (c) 1998-2010 ILIAS open source, Extended GPL, see docs/LICENSE */
-require_once('./Services/UIComponent/classes/class.ilUIHookPluginGUI.php');
-require_once('./Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/QuickRoleAssignment/classes/class.ilQuickRoleAssignmentPlugin.php');
-
 /**
  * Class ilQuickRoleAssignmentUIHookGUI
  *

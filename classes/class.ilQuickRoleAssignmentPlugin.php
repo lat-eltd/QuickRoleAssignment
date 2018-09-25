@@ -1,8 +1,6 @@
 <?php
-
-require_once("./Services/UIComponent/classes/class.ilUserInterfaceHookPlugin.php");
-require_once("./Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/QuickRoleAssignment/classes/class.ilQuickRoleAssignmentAccess.php");
-
+require_once __DIR__ . "/../vendor/autoload.php";
+use srag\DIC\DICTrait;
 /**
  * ilQuickRoleAssignmentPlugin
  *
@@ -15,12 +13,16 @@ class ilQuickRoleAssignmentPlugin extends ilUserInterfaceHookPlugin {
 	//const CRONJOB_AUTH_TOKEN = "8d641029d094c05947ed9b3566d5b959cc643136";
 
 	protected static $instance;
+
+    /**
+     * @var ilQuickRoleAssignmentAccess
+     */
 	protected $access;
 
 
-	/**
-	 * @return ilLearningProgressLookupPlugin
-	 */
+    /**
+     * @return ilQuickRoleAssignmentPlugin
+     */
 	public static function getInstance() {
 		if (!isset(self::$instance)) {
 			self::$instance = new self();
@@ -30,7 +32,10 @@ class ilQuickRoleAssignmentPlugin extends ilUserInterfaceHookPlugin {
 	}
 
 
-	public function init() {
+    /**
+     * @throws Exception
+     */
+    public function init() {
 		self::loadActiveRecord();
 	}
 
@@ -44,7 +49,7 @@ class ilQuickRoleAssignmentPlugin extends ilUserInterfaceHookPlugin {
 
 
 	/**
-	 * @return ilLearningProgressLookupAccess
+	 * @return ilQuickRoleAssignmentAccess
 	 */
 	public function getAccessManager() {
 		if (is_null($this->access)) {

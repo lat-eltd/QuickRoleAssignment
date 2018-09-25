@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Class srQuickRoleAssignmentConfig
  */
@@ -7,6 +6,9 @@ class srQuickRoleAssignmentConfig extends ActiveRecord {
 
 	const F_ADMIN_ROLES = 'admin_roles';
 	const F_ASSIGNABLE_ROLES = 'assignable_roles';
+
+	const DB_TABLE = 'sr_quick_assign_conf';
+
 	/**
 	 * @var array
 	 */
@@ -20,18 +22,20 @@ class srQuickRoleAssignmentConfig extends ActiveRecord {
 	 */
 	protected $ar_safe_read = false;
 
+    /**
+     * @return string
+     */
+    public function getConnectorContainerName() {
+        return self::DB_TABLE;
+    }
 
-	public static function returnDbTableName() {
-		return 'sr_quick_assign_conf';
-	}
 
-
-	/**
+    /**
 	 * @param $name
 	 *
 	 * @return string
 	 */
-	public static function get($name) {
+	public static function getConfig($name) {
 		if (!isset(self::$cache_loaded[$name])) {
 			$obj = self::find($name);
 			if ($obj === null) {

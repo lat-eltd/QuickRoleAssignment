@@ -1,7 +1,5 @@
 <?php
-
-require_once("./Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/QuickRoleAssignment/classes/Config/class.srQuickRoleAssignmentConfig.php");
-
+require_once __DIR__ . "/../vendor/autoload.php";
 /**
  * ilQuickRoleAssignmentAccess
  *
@@ -13,7 +11,10 @@ class ilQuickRoleAssignmentAccess {
 	protected static $instance;
 
 
-	public static function getInstance() {
+    /**
+     * @return ilQuickRoleAssignmentAccess
+     */
+    public static function getInstance() {
 		if (is_null(self::$instance)) {
 			self::$instance = new self();
 		}
@@ -22,11 +23,12 @@ class ilQuickRoleAssignmentAccess {
 	}
 
 
-	public function hasCurrentUserViewPermission() {
-		global $ilUser, $rbacreview;
-
-		$required_role = srQuickRoleAssignmentConfig::get(srQuickRoleAssignmentConfig::F_ADMIN_ROLES);
-
-		return $rbacreview->isAssignedToAtLeastOneGivenRole($ilUser->getId(), $required_role);
+    /**
+     * @return bool
+     */
+    public function hasCurrentUserViewPermission() {
+		global $DIC;
+		$required_role = srQuickRoleAssignmentConfig::getConfig(srQuickRoleAssignmentConfig::F_ADMIN_ROLES);
+		return $DIC->rbac()->review()->isAssignedToAtLeastOneGivenRole($DIC->user()->getId(), $required_role);
 	}
 }
