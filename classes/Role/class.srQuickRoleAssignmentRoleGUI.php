@@ -1,5 +1,5 @@
 <?php
-use srag\DIC\DICTrait;
+use srag\DIC\QuickRoleAssignment\DICTrait;
 
 /**
  * GUI-Class srQuickRoleAssignmentRoleGUI
@@ -28,7 +28,7 @@ class srQuickRoleAssignmentRoleGUI {
      * srQuickRoleAssignmentRoleGUI constructor.
      */
     function __construct() {
-		self::dic()->template()->setTitle(self::plugin()->translate('plugin_title'));
+		self::dic()->ui()->mainTemplate()->setTitle(self::plugin()->translate('plugin_title'));
 	}
 
 
@@ -53,7 +53,7 @@ class srQuickRoleAssignmentRoleGUI {
 
 		$this->checkAccessOrFail();
 
-		self::dic()->template()->getStandardTemplate();
+		self::dic()->ui()->mainTemplate()->getStandardTemplate();
 		//$this->tabs->addTab("course_gui", self::plugin()->translate('title_search_course'), self::dic()->ctrl()->getLinkTarget($this));
 
 		switch ($cmd) {
@@ -69,7 +69,7 @@ class srQuickRoleAssignmentRoleGUI {
 
 		$content = $this->table->getHTML();
 
-		self::dic()->template()->setContent($content);
+		self::dic()->ui()->mainTemplate()->setContent($content);
 	}
 
 

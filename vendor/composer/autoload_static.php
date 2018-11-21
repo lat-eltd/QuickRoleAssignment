@@ -9,11 +9,16 @@ class ComposerStaticInita844107d986900f678b9a895da2527c7
     public static $prefixLengthsPsr4 = array (
         's' => 
         array (
+            'srag\\LibrariesNamespaceChanger\\' => 31,
             'srag\\DIC\\' => 9,
         ),
     );
 
     public static $prefixDirsPsr4 = array (
+        'srag\\LibrariesNamespaceChanger\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/srag/librariesnamespacechanger/src',
+        ),
         'srag\\DIC\\' => 
         array (
             0 => __DIR__ . '/..' . '/srag/dic/src',
@@ -161,16 +166,20 @@ class ComposerStaticInita844107d986900f678b9a895da2527c7
         'srQuickRoleAssignmentModel' => __DIR__ . '/../..' . '/classes/class.srQuickRoleAssignmentModel.php',
         'srQuickRoleAssignmentRoleGUI' => __DIR__ . '/../..' . '/classes/Role/class.srQuickRoleAssignmentRoleGUI.php',
         'srQuickRoleAssignmentRoleTableGUI' => __DIR__ . '/../..' . '/classes/Role/class.srQuickRoleAssignmentRoleTableGUI.php',
-        'srag\\DIC\\DICStatic' => __DIR__ . '/..' . '/srag/dic/src/DICStatic.php',
-        'srag\\DIC\\DICStaticInterface' => __DIR__ . '/..' . '/srag/dic/src/DICStaticInterface.php',
-        'srag\\DIC\\DICTrait' => __DIR__ . '/..' . '/srag/dic/src/DICTrait.php',
-        'srag\\DIC\\DIC\\AbstractDIC' => __DIR__ . '/..' . '/srag/dic/src/DIC/AbstractDIC.php',
-        'srag\\DIC\\DIC\\DICInterface' => __DIR__ . '/..' . '/srag/dic/src/DIC/DICInterface.php',
-        'srag\\DIC\\DIC\\LegacyDIC' => __DIR__ . '/..' . '/srag/dic/src/DIC/LegacyDIC.php',
-        'srag\\DIC\\DIC\\NewDIC' => __DIR__ . '/..' . '/srag/dic/src/DIC/NewDIC.php',
-        'srag\\DIC\\Exception\\DICException' => __DIR__ . '/..' . '/srag/dic/src/Exception/DICException.php',
-        'srag\\DIC\\Plugin\\Plugin' => __DIR__ . '/..' . '/srag/dic/src/Plugin/Plugin.php',
-        'srag\\DIC\\Plugin\\PluginInterface' => __DIR__ . '/..' . '/srag/dic/src/Plugin/PluginInterface.php',
+        'srag\\DIC\\QuickRoleAssignment\\DICStatic' => __DIR__ . '/..' . '/srag/dic/src/DICStatic.php',
+        'srag\\DIC\\QuickRoleAssignment\\DICStaticInterface' => __DIR__ . '/..' . '/srag/dic/src/DICStaticInterface.php',
+        'srag\\DIC\\QuickRoleAssignment\\DICTrait' => __DIR__ . '/..' . '/srag/dic/src/DICTrait.php',
+        'srag\\DIC\\QuickRoleAssignment\\DIC\\AbstractDIC' => __DIR__ . '/..' . '/srag/dic/src/DIC/AbstractDIC.php',
+        'srag\\DIC\\QuickRoleAssignment\\DIC\\DICInterface' => __DIR__ . '/..' . '/srag/dic/src/DIC/DICInterface.php',
+        'srag\\DIC\\QuickRoleAssignment\\DIC\\LegacyDIC' => __DIR__ . '/..' . '/srag/dic/src/DIC/LegacyDIC.php',
+        'srag\\DIC\\QuickRoleAssignment\\DIC\\NewDIC' => __DIR__ . '/..' . '/srag/dic/src/DIC/NewDIC.php',
+        'srag\\DIC\\QuickRoleAssignment\\Exception\\DICException' => __DIR__ . '/..' . '/srag/dic/src/Exception/DICException.php',
+        'srag\\DIC\\QuickRoleAssignment\\Plugin\\Plugin' => __DIR__ . '/..' . '/srag/dic/src/Plugin/Plugin.php',
+        'srag\\DIC\\QuickRoleAssignment\\Plugin\\PluginInterface' => __DIR__ . '/..' . '/srag/dic/src/Plugin/PluginInterface.php',
+        'srag\\DIC\\QuickRoleAssignment\\Plugin\\Pluginable' => __DIR__ . '/..' . '/srag/dic/src/Plugin/Pluginable.php',
+        'srag\\DIC\\QuickRoleAssignment\\Version\\Version' => __DIR__ . '/..' . '/srag/dic/src/Version/Version.php',
+        'srag\\DIC\\QuickRoleAssignment\\Version\\VersionInterface' => __DIR__ . '/..' . '/srag/dic/src/Version/VersionInterface.php',
+        'srag\\LibrariesNamespaceChanger\\LibrariesNamespaceChanger' => __DIR__ . '/..' . '/srag/librariesnamespacechanger/src/LibrariesNamespaceChanger.php',
     );
 
     public static function getInitializer(ClassLoader $loader)

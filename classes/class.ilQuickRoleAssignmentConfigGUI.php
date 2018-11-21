@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . "/../vendor/autoload.php";
-use srag\DIC\DICTrait;
+use srag\DIC\QuickRoleAssignment\DICTrait;
 
 /**
  * Class ilQuickRoleAssignmentConfigGUI
@@ -50,7 +50,7 @@ class ilQuickRoleAssignmentConfigGUI extends ilPluginConfigGUI {
 		$config_form_gui = $this->initForm();
 		$config_form_gui->fillForm();
 
-		self::dic()->template()->setContent($config_form_gui->getHTML());
+		self::dic()->ui()->mainTemplate()->setContent($config_form_gui->getHTML());
 	}
 
 
@@ -84,7 +84,7 @@ class ilQuickRoleAssignmentConfigGUI extends ilPluginConfigGUI {
 			ilUtil::sendFailure(self::plugin()->translate("admin_form_failed_config"));
 		}
 
-		self::dic()->template()->setContent($config_form_gui->getHTML());
+		self::dic()->ui()->mainTemplate()->setContent($config_form_gui->getHTML());
 	}
 }
 

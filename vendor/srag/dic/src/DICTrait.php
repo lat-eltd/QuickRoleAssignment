@@ -1,15 +1,16 @@
 <?php
 
-namespace srag\DIC;
+namespace srag\DIC\QuickRoleAssignment;
 
-use srag\DIC\DIC\DICInterface;
-use srag\DIC\Exception\DICException;
-use srag\DIC\Plugin\PluginInterface;
+use srag\DIC\QuickRoleAssignment\DIC\DICInterface;
+use srag\DIC\QuickRoleAssignment\Exception\DICException;
+use srag\DIC\QuickRoleAssignment\Plugin\PluginInterface;
+use srag\DIC\QuickRoleAssignment\Version\VersionInterface;
 
 /**
  * Trait DICTrait
  *
- * @package srag\DIC
+ * @package srag\DIC\QuickRoleAssignment
  *
  * @author  studer + raimann ag - Team Custom 1 <support-custom1@studer-raimann.ch>
  */
@@ -47,6 +48,16 @@ trait DICTrait {
 		self::checkPluginClassNameConst();
 
 		return DICStatic::plugin(static::PLUGIN_CLASS_NAME);
+	}
+
+
+	/**
+	 * Get version interface
+	 *
+	 * @return VersionInterface Version interface
+	 */
+	protected static final function version()/*: VersionInterface*/ {
+		return DICStatic::version();
 	}
 
 

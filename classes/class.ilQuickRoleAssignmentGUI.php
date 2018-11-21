@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . "/../vendor/autoload.php";
-use srag\DIC\DICTrait;
+use srag\DIC\QuickRoleAssignment\DICTrait;
 /**
  * GUI-Class ilQuickRoleAssignmentGUI
  *
@@ -33,9 +33,9 @@ class ilQuickRoleAssignmentGUI {
      * @throws ilCtrlException
      */
     public function executeCommand() {
-		self::dic()->template()->getStandardTemplate();
+		self::dic()->ui()->mainTemplate()->getStandardTemplate();
 
-		self::dic()->template()->addCss(self::plugin()->getPluginObject()->getStyleSheetLocation("default/quick_role_assignment.css"));
+		self::dic()->ui()->mainTemplate()->addCss(self::plugin()->getPluginObject()->getStyleSheetLocation("default/quick_role_assignment.css"));
 
 		$next_class = self::dic()->ctrl()->getNextClass($this);
 		if (!$this->accessCheck($next_class)) {
@@ -57,7 +57,7 @@ class ilQuickRoleAssignmentGUI {
 				self::dic()->ctrl()->forwardCommand($gui);
 				break;
 		}
-		self::dic()->template()->show();
+		self::dic()->ui()->mainTemplate()->show();
 
 		return true;
 	}
