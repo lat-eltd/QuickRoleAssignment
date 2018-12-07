@@ -1,13 +1,5 @@
 <?php
-require_once('./Services/Table/classes/class.ilTable2GUI.php');
-
-require_once('./Services/Form/classes/class.ilTextInputGUI.php');
-require_once('./Services/Form/classes/class.ilSelectInputGUI.php');
-require_once('./Services/Form/classes/class.ilDateTimeInputGUI.php');
-require_once("./Services/Form/classes/class.ilCombinationInputGUI.php");
-
-require_once('./Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/QuickRoleAssignment/classes/class.ilQuickRoleAssignmentPlugin.php');
-require_once('./Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/QuickRoleAssignment/classes/Role/class.srQuickRoleAssignmentRoleTableGUI.php');
+use srag\DIC\QuickRoleAssignment\DICTrait;
 
 /**
  * Class srQuickRoleAssignmentRoleTableGUI
@@ -17,38 +9,25 @@ require_once('./Customizing/global/plugins/Services/UIComponent/UserInterfaceHoo
  */
 class srQuickRoleAssignmentRoleTableGUI extends ilTable2GUI {
 
-	/**
-	 * @var ilCtrl $ctrl
-	 */
-	protected $ctrl;
+    use DICTrait;
+
+    const PLUGIN_CLASS_NAME = ilQuickRoleAssignmentPlugin::class;
+
 	/** @var  array $filter */
 	protected $filter = array();
-	protected $access;
-
 	protected $ignored_cols;
-
-	/** @var bool  */
-	protected  $show_default_filter = false;
-
-	/** @var array  */
-	protected  $numeric_fields = array("course_id");
+	/** @var bool */
+	protected $show_default_filter = false;
+	/** @var array */
+	protected $numeric_fields = array( "course_id" );
 
 
 	/**
-	 * @param srQuickRoleAssignmentRoleGUI  $parent_obj
-	 * @param string                        $parent_cmd
+	 * @param srQuickRoleAssignmentRoleGUI $parent_obj
+	 * @param string $parent_cmd
 	 */
 	public function __construct($parent_obj, $parent_cmd = "index") {
-		/** @var $ilCtrl ilCtrl */
-		/** @var ilToolbarGUI $ilToolbar */
-		global $ilCtrl, $ilToolbar;
-
-		$this->ctrl = $ilCtrl;
-		$this->pl = ilQuickRoleAssignmentPlugin::getInstance();
-		$this->access = $this->pl->getAccessManager();
-		$this->toolbar = $ilToolbar;
-
-		if(!$ilCtrl->getCmd()) {
+		if (!self::dic()->ctrl()->getCmd()) {
 			$this->setShowDefaultFilter(true);
 		}
 
@@ -58,8 +37,8 @@ class srQuickRoleAssignmentRoleTableGUI extends ilTable2GUI {
 		parent::__construct($parent_obj, $parent_cmd, '');
 
 		$this->setFormName('sr_xqra_role');
-		$this->setRowTemplate('tpl.default_row.html', $this->pl->getDirectory());
-		$this->setFormAction($this->ctrl->getFormAction($parent_obj));
+		$this->setRowTemplate('tpl.default_row.html', self::plugin()->getPluginObject()->getDirectory());
+		$this->setFormAction(self::dic()->ctrl()->getFormAction($parent_obj));
 		//$this->setDefaultOrderField('Datetime');
 		$this->setDefaultOrderDirection('desc');
 		$this->setShowRowsSelector(false);
@@ -69,31 +48,32 @@ class srQuickRoleAssignmentRoleTableGUI extends ilTable2GUI {
 		$this->setDisableFilterHiding(true);
 		$this->setEnableNumInfo(true);
 
-		$this->setIgnoredCols(array(''));
-		$this->setTitle($this->pl->txt('title_search_user'));
+		$this->setIgnoredCols(array( '' ));
+		$this->setTitle(self::plugin()->translate('title_search_user'));
 
 		$this->setSelectAllCheckbox("id[]");
 		$this->setTopCommands(true);
 		$this->setEnableAllCommand(false);
 		$this->setSelectAllCheckbox('');
 
-
 		$cmds = $parent_obj->getRoleMultiCommands();
-		foreach($cmds as $cmd => $caption)
-		{
+		foreach ($cmds as $cmd => $caption) {
 			$this->addMultiCommand($cmd, $caption);
 		}
-		$this->addCommandButton('cancel', $this->pl->txt('table_command_cancel'));
+		$this->addCommandButton('cancel', self::plugin()->translate('table_command_cancel'));
 
 		$this->initFilter();
 		$this->addColumns();
-        if (!in_array($parent_cmd, array('applyFilter', 'resetFilter'))) {
-            $this->parseData();
-        }
+		if (!in_array($parent_cmd, array( 'applyFilter', 'resetFilter' ))) {
+			$this->parseData();
+		}
 	}
 
 
-	protected function parseData() {
+    /**
+     *
+     */
+    protected function parseData() {
 		global $ilUser;
 		$this->setExternalSorting(true);
 		$this->setExternalSegmentation(true);
@@ -104,9 +84,9 @@ class srQuickRoleAssignmentRoleTableGUI extends ilTable2GUI {
 
 		$options = array(
 			'filters' => $this->filter,
-			'limit' => array(),
-			'count' => true,
-			'sort' => array( 'field' => $this->getOrderField(), 'direction' => $this->getOrderDirection() ),
+			'limit'   => array(),
+			'count'   => true,
+			'sort'    => array( 'field' => $this->getOrderField(), 'direction' => $this->getOrderDirection() ),
 		);
 		$count = srQuickRoleAssignmentModel::getUsers($options);
 
@@ -133,19 +113,27 @@ class srQuickRoleAssignmentRoleTableGUI extends ilTable2GUI {
 		$this->setData($rows);
 	}
 
-	public function initFilter() {
+
+    /**
+     *
+     */
+    public function initFilter() {
 		// Login
-		$item = new ilTextInputGUI($this->pl->txt('filter_label_login'), 'login');
+		$item = new ilTextInputGUI(self::plugin()->translate('filter_label_login'), 'login');
 		$this->addFilterItem($item);
 		$item->readFromSession();
 		$this->filter['login'] = $item->getValue();
 	}
 
-	public function getTableColumns() {
+
+    /**
+     * @return array
+     */
+    public function getTableColumns() {
 		$cols = array();
 
-		$cols['id'] = array( 'txt' => '', 'default' => true, 'width' => '5');
-		$cols['role'] = array( 'txt' => null, 'default' => true, 'width' => 'auto');
+		$cols['id'] = array( 'txt' => '', 'default' => true, 'width' => '5' );
+		$cols['role'] = array( 'txt' => null, 'default' => true, 'width' => 'auto' );
 
 		return $cols;
 	}
@@ -159,29 +147,33 @@ class srQuickRoleAssignmentRoleTableGUI extends ilTable2GUI {
 	}
 
 
-	private function addColumns() {
+    /**
+     *
+     */
+    private function addColumns() {
 		foreach ($this->getTableColumns() as $k => $v) {
 			if (isset($v['sort_field'])) {
 				$sort = $v['sort_field'];
 			} else {
-				$sort = NULL;
+				$sort = null;
 			}
 			$this->addColumn($v['txt'], $sort, $v['width']);
 		}
 	}
 
+
 	/**
 	 * @param array $a_set
 	 */
 	public function fillRow($a_set) {
-		$this->tpl->setVariable('USER', sprintf($this->pl->txt('user_status_line'), $a_set['login'], $a_set['firstname'], $a_set['lastname']));
+		$this->tpl->setVariable('USER', self::plugin()->translate('user_status_line', '', [$a_set['login'], $a_set['firstname'], $a_set['lastname']]));
 
 		$this->tpl->setCurrentBlock('user_tr');
 		$this->tpl->setVariable('CSS_CLASS', 'status_line');
-		$this->tpl->setVariable('ROLE', $this->pl->txt('table_label_role'));
+		$this->tpl->setVariable('ROLE', self::plugin()->translate('table_label_role'));
 		$this->tpl->parseCurrentBlock();
 
-		if(count($a_set['roles']) > 0) {
+		if (count($a_set['roles']) > 0) {
 			$odd = true;
 			foreach ($a_set['roles'] as $key => $role) {
 				$this->tpl->setCurrentBlock('user_tr');
@@ -190,17 +182,18 @@ class srQuickRoleAssignmentRoleTableGUI extends ilTable2GUI {
 				$css_class .= ($odd) ? "odd " : "even ";
 				$this->tpl->setVariable('CSS_CLASS', $css_class);
 
-				$this->tpl->setVariable('ROLE', $role['title'].'<div class="role_description">'.$role['description'].'</div>');
+				$this->tpl->setVariable('ROLE', $role['title'] . '<div class="role_description">' . $role['description'] . '</div>');
 
 				$user_assigned = isset($a_set['role_assignments'][$role['obj_id']]);
 
-				$hidden_user_input = '<input type="hidden" name="user_id[]" value="'.htmlspecialchars($a_set['usr_id']).'" />';
+				$hidden_user_input = '<input type="hidden" name="user_id[]" value="' . htmlspecialchars($a_set['usr_id']) . '" />';
 
-				$check_box = '<input type="checkbox" name="id['.htmlspecialchars($a_set['usr_id']).'][]" value="'.htmlspecialchars($role['obj_id']).'" ';
-				$check_box .= ($user_assigned)? 'checked="checked" ' : '';
+				$check_box = '<input type="checkbox" name="id[' . htmlspecialchars($a_set['usr_id']) . '][]" value="'
+				             . htmlspecialchars($role['obj_id']) . '" ';
+				$check_box .= ($user_assigned) ? 'checked="checked" ' : '';
 				$check_box .= ' />';
 
-				$this->tpl->setVariable('FORM_DATA', $check_box.$hidden_user_input);
+				$this->tpl->setVariable('FORM_DATA', $check_box . $hidden_user_input);
 
 				$this->tpl->parseCurrentBlock();
 				$odd = !$odd;
@@ -209,10 +202,11 @@ class srQuickRoleAssignmentRoleTableGUI extends ilTable2GUI {
 			$this->tpl->setCurrentBlock('user_tr');
 			$css_class = "status_list_entry ";
 			$this->tpl->setVariable('CSS_CLASS', $css_class);
-			$this->tpl->setVariable('ROLE', $this->pl->txt('no_roles_available'));
+			$this->tpl->setVariable('ROLE', self::plugin()->translate('no_roles_available'));
 			$this->tpl->parseCurrentBlock();
 		}
 	}
+
 
 	/**
 	 * @param array $formats
@@ -225,13 +219,17 @@ class srQuickRoleAssignmentRoleTableGUI extends ilTable2GUI {
 
 		foreach ($custom_fields as $format_key) {
 			if (isset($this->custom_export_formats[$format_key])) {
-				$this->export_formats[$format_key] = $this->pl->getPrefix() . "_" . $this->custom_export_formats[$format_key];
+				$this->export_formats[$format_key] = self::plugin()->getPluginObject()->getPrefix() . "_" . $this->custom_export_formats[$format_key];
 			}
 		}
 	}
 
 
-	public function exportData($format, $send = false) {
+    /**
+     * @param int $format
+     * @param bool $send
+     */
+    public function exportData($format, $send = false) {
 		if (array_key_exists($format, $this->custom_export_formats)) {
 			if ($this->dataExists()) {
 
@@ -246,12 +244,13 @@ class srQuickRoleAssignmentRoleTableGUI extends ilTable2GUI {
 		}
 	}
 
-	/**
-	 * @param object $a_worksheet
-	 * @param int    $a_row
-	 * @param array  $a_set
-	 */
-	protected function fillRowExcel($a_worksheet, &$a_row, $a_set) {
+
+    /**
+     * @param ilExcel $a_excel
+     * @param int $a_row
+     * @param array $a_set
+     */
+	protected function fillRowExcel(ilExcel $a_excel, &$a_row, $a_set) {
 		$col = 0;
 
 		foreach ($this->getSelectableColumns() as $k => $v) {
@@ -259,32 +258,34 @@ class srQuickRoleAssignmentRoleTableGUI extends ilTable2GUI {
 				if (is_array($a_set[$k])) {
 					$a_set[$k] = implode(', ', $a_set[$k]);
 				}
-				$a_worksheet->writeString($a_row, $col, strip_tags($a_set[$k]));
+                $a_excel->writeString($a_row, $col, strip_tags($a_set[$k]));
 				$col ++;
 			}
 		}
 	}
 
-	protected function fillHeaderExcel($worksheet, &$a_row)
-	{
+    /**
+     * @param ilExcel $a_excel
+     * @param int $a_row
+     */
+	protected function fillHeaderExcel(ilExcel $a_excel, &$a_row) {
 		$col = 0;
-		foreach ($this->getSelectableColumns() as $column_key => $column)
-		{
+		foreach ($this->getSelectableColumns() as $column_key => $column) {
 			$title = strip_tags($column["txt"]);
-			if(!in_array($column_key, $this->getIgnoredCols()) && $title != '')
-			{
+			if (!in_array($column_key, $this->getIgnoredCols()) && $title != '') {
 				if ($this->isColumnSelected($column_key)) {
-					$worksheet->write($a_row, $col, $title);
-					$col++;
+                    $a_excel->write($a_row, $col, $title);
+					$col ++;
 				}
 			}
 		}
-		$a_row++;
+		$a_row ++;
 	}
+
 
 	/**
 	 * @param object $a_csv
-	 * @param array  $a_set
+	 * @param array $a_set
 	 */
 	protected function fillRowCSV($a_csv, $a_set) {
 
@@ -338,6 +339,7 @@ class srQuickRoleAssignmentRoleTableGUI extends ilTable2GUI {
 	public function getIgnoredCols() {
 		return $this->ignored_cols;
 	}
+
 
 	/**
 	 * @param boolean $default_filter

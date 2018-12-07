@@ -1,57 +1,43 @@
 <?php
-
-require_once("./Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/QuickRoleAssignment/classes/class.ilQuickRoleAssignmentPlugin.php");
-require_once("./Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/QuickRoleAssignment/classes/Role/class.srQuickRoleAssignmentRoleTableGUI.php");
-require_once("./Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/QuickRoleAssignment/classes/class.srQuickRoleAssignmentModel.php");
+use srag\DIC\QuickRoleAssignment\DICTrait;
 
 /**
  * GUI-Class srQuickRoleAssignmentRoleGUI
  *
- * @author Michael Herren <mh@studer-raimann.ch>
- * @version 1.0.0
+ * @author            Michael Herren <mh@studer-raimann.ch>
+ * @version           1.0.0
  *
  * @ilCtrl_IsCalledBy srQuickRoleAssignmentRoleGUI: ilQuickRoleAssignmentGUI
  */
 class srQuickRoleAssignmentRoleGUI {
 
+    use DICTrait;
+
+    const PLUGIN_CLASS_NAME = ilQuickRoleAssignmentPlugin::class;
+
 	const CMD_DEFAULT = 'index';
 	const CMD_RESET_FILTER = 'resetFilter';
 	const CMD_APPLY_FILTER = 'applyFilter';
 	const CMD_SAVE_ASSIGNMENT = 'assignRoles';
-
 	/**
 	 * @var  ilTable2GUI
 	 */
 	protected $table;
 
-	protected $tpl;
-	protected $ctrl;
-	protected $pl;
-	protected $toolbar;
-	protected $tabs;
-	protected $access;
-
-
-	function __construct() {
-		global $tpl, $ilCtrl, $ilAccess, $lng, $ilToolbar, $ilTabs;
-		/**
-		 * @var ilTemplate      $tpl
-		 * @var ilCtrl          $ilCtrl
-		 * @var ilAccessHandler $ilAccess
-		 */
-		$this->pl = ilQuickRoleAssignmentPlugin::getInstance();
-		$this->tpl = $tpl;
-		$this->ctrl = $ilCtrl;
-		$this->toolbar = $ilToolbar;
-		$this->tabs = $ilTabs;
-		$this->access = $this->pl->getAccessManager();
-
-		$this->tpl->setTitle($this->pl->txt('plugin_title'));
+    /**
+     * srQuickRoleAssignmentRoleGUI constructor.
+     */
+    function __construct() {
+		self::dic()->ui()->mainTemplate()->setTitle(self::plugin()->translate('plugin_title'));
 	}
 
 
-	protected function checkAccessOrFail() {
-		if($this->access->hasCurrentUserViewPermission()) {
+    /**
+     * @return bool
+     * @throws ilException
+     */
+    protected function checkAccessOrFail() {
+		if (self::plugin()->getPluginObject()->getAccessManager()->hasCurrentUserViewPermission()) {
 			return true;
 		}
 
@@ -59,13 +45,16 @@ class srQuickRoleAssignmentRoleGUI {
 	}
 
 
-	public function executeCommand() {
-		$cmd = $this->ctrl->getCmd();
+    /**
+     * @throws ilException
+     */
+    public function executeCommand() {
+		$cmd = self::dic()->ctrl()->getCmd();
 
 		$this->checkAccessOrFail();
 
-		$this->tpl->getStandardTemplate();
-		//$this->tabs->addTab("course_gui", $this->pl->txt('title_search_course'), $this->ctrl->getLinkTarget($this));
+		self::dic()->ui()->mainTemplate()->getStandardTemplate();
+		//$this->tabs->addTab("course_gui", self::plugin()->translate('title_search_course'), self::dic()->ctrl()->getLinkTarget($this));
 
 		switch ($cmd) {
 			case self::CMD_RESET_FILTER:
@@ -80,35 +69,47 @@ class srQuickRoleAssignmentRoleGUI {
 
 		$content = $this->table->getHTML();
 
-		$this->tpl->setContent($content);
+		self::dic()->ui()->mainTemplate()->setContent($content);
 	}
 
 
-	public function index() {
-        $this->table = new srQuickRoleAssignmentRoleTableGUI($this);
-		$this->tpl->setContent($this->table->getHTML());
+    /**
+     *
+     */
+    public function index() {
+		$this->table = new srQuickRoleAssignmentRoleTableGUI($this);
 	}
 
 
-	public function applyFilter() {
-        $this->table = new srQuickRoleAssignmentRoleTableGUI($this, self::CMD_APPLY_FILTER);
-        $this->table->writeFilterToSession();
+    /**
+     *
+     */
+    public function applyFilter() {
+		$this->table = new srQuickRoleAssignmentRoleTableGUI($this, self::CMD_APPLY_FILTER);
+		$this->table->writeFilterToSession();
 		$this->table->resetOffset();
 		$this->index();
 	}
 
 
-	public function resetFilter() {
-        $this->table = new srQuickRoleAssignmentRoleTableGUI($this, self::CMD_RESET_FILTER);
+    /**
+     *
+     */
+    public function resetFilter() {
+		$this->table = new srQuickRoleAssignmentRoleTableGUI($this, self::CMD_RESET_FILTER);
 		$this->table->resetOffset();
 		$this->table->resetFilter();
 		$this->index();
 	}
 
-	public function assignRoles() {
+
+    /**
+     * @throws ilException
+     */
+    public function assignRoles() {
 		global $rbacreview, $rbacadmin;
 
-		if(!isset($_POST['id']) && !isset($_POST['user_id'])) {
+		if (!isset($_POST['id']) && !isset($_POST['user_id'])) {
 			throw new ilException("Error in role assigning request!");
 		}
 
@@ -116,63 +117,73 @@ class srQuickRoleAssignmentRoleGUI {
 		$allowed_roles = array_keys(srQuickRoleAssignmentModel::getAvailableRoles());
 
 		$deassigned_roles = $current_roles;
-		$role_changes = (is_array($_POST['id']))? $_POST['id'] : array();
+		$role_changes = (is_array($_POST['id'])) ? $_POST['id'] : array();
 		$changes_made = false;
 
 		// add roles
-		foreach($role_changes as $user_id=>$roles) {
-			foreach($roles as $role_id) {
+		foreach ($role_changes as $user_id => $roles) {
+			foreach ($roles as $role_id) {
 				// only assign allowed roles!
-				if(!in_array($role_id, $allowed_roles)) {
+				if (!in_array($role_id, $allowed_roles)) {
 					throw new ilException("You try to set not an allowed role!");
 				}
 
 				// assign only new users
-				if(!isset($current_roles[$user_id]) || !array_key_exists($role_id, $current_roles[$user_id])) {
+				if (!isset($current_roles[$user_id]) || !array_key_exists($role_id, $current_roles[$user_id])) {
 					$rbacadmin->assignUser($role_id, $user_id);
 					$changes_made = true;
 					continue;
-				} else if(isset($current_roles[$user_id]) && array_key_exists($role_id, $current_roles[$user_id])){
-					// if assignment exists do not deassign
-					unset($deassigned_roles[$user_id][$role_id]);
-					if(count($deassigned_roles[$user_id]) == 0)
-						unset($deassigned_roles[$user_id]);
+				} else {
+					if (isset($current_roles[$user_id]) && array_key_exists($role_id, $current_roles[$user_id])) {
+						// if assignment exists do not deassign
+						unset($deassigned_roles[$user_id][$role_id]);
+						if (count($deassigned_roles[$user_id]) == 0) {
+							unset($deassigned_roles[$user_id]);
+						}
+					}
 				}
 			}
 		}
 
 		// remove roles
-		foreach($deassigned_roles as $user_id=>$roles) {
-			foreach($roles as $role_id) {
+		foreach ($deassigned_roles as $user_id => $roles) {
+			foreach ($roles as $role_id) {
 				// only deassign allowed roles!
-				if(in_array($role_id, $allowed_roles)) {
+				if (in_array($role_id, $allowed_roles)) {
 					$rbacadmin->deassignUser($role_id, $user_id);
 					$changes_made = true;
 				}
 			}
 		}
 
-		if($changes_made) {
-			ilUtil::sendSuccess($this->pl->txt('message_roles_assigned'), true);
+		if ($changes_made) {
+			ilUtil::sendSuccess(self::plugin()->translate('message_roles_assigned'), true);
 		} else {
-			ilUtil::sendInfo($this->pl->txt('message_no_changes'), true);
+			ilUtil::sendInfo(self::plugin()->translate('message_no_changes'), true);
 		}
 
-		$this->ctrl->redirect($this);
+		self::dic()->ctrl()->redirect($this);
 	}
 
-	public function getRoleMultiCommands() {
+
+    /**
+     * @return array
+     */
+    public function getRoleMultiCommands() {
 		$cmds = array(
-			'assignRoles' => $this->pl->txt('table_command_assign_roles'),
+			'assignRoles' => self::plugin()->translate('table_command_assign_roles'),
 		);
 
 		return $cmds;
 	}
 
-	public function cancel() {
-		$this->ctrl->redirect($this);
-	}
 
+    /**
+     *
+     */
+    public function cancel() {
+		self::dic()->ctrl()->redirect($this);
+	}
 }
 
 ?>

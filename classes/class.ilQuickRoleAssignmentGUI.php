@@ -1,55 +1,47 @@
 <?php
-
-require_once("./Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/QuickRoleAssignment/classes/class.ilQuickRoleAssignmentPlugin.php");
-require_once("./Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/QuickRoleAssignment/classes/Role/class.srQuickRoleAssignmentRoleGUI.php");
-
+require_once __DIR__ . "/../vendor/autoload.php";
+use srag\DIC\QuickRoleAssignment\DICTrait;
 /**
  * GUI-Class ilQuickRoleAssignmentGUI
  *
- * @author Michael Herren <mh@studer-raimann.ch>
- * @version 1.0.0
+ * @author            Michael Herren <mh@studer-raimann.ch>
+ * @version           1.0.0
  *
  * @ilCtrl_IsCalledBy ilQuickRoleAssignmentGUI: ilRouterGUI, ilUIPluginRouterGUI
  * @ilCtrl_Calls      ilQuickRoleAssignmentGUI: srQuickRoleAssignmentRoleGUI
  */
 class ilQuickRoleAssignmentGUI {
 
+    use DICTrait;
+
+    const PLUGIN_CLASS_NAME = ilQuickRoleAssignmentPlugin::class;
+
 	const RELOAD_LANGUAGES = false;
 
-	protected $tpl;
-	protected $ctrl;
-	protected $tabs;
-	protected $lng;
-	protected $access;
-
-	public function __construct() {
-		global $tpl, $ilCtrl, $ilTabs, $lng;
-		/**
-		 * @var $tpl    ilTemplate
-		 * @var $ilCtrl ilCtrl
-		 * @var $ilTabs ilTabsGUI
-		 */
-		$this->tpl = $tpl;
-		$this->pl = ilQuickRoleAssignmentPlugin::getInstance();
-		$this->ctrl = $ilCtrl;
-		$this->tabs = $ilTabs;
-		$this->lng = $lng;
-		$this->access = $this->pl->getAccessManager();
+    /**
+     * ilQuickRoleAssignmentGUI constructor.
+     */
+    public function __construct() {
 		if (self::RELOAD_LANGUAGES OR $_GET['rl'] == 'true') {
-			$this->pl->updateLanguages();
+			self::plugin()->getPluginObject()->updateLanguages();
 		}
 	}
 
 
-	public function executeCommand() {
-		$cmd = $this->ctrl->getCmd();
+    /**
+     * @return bool
+     * @throws ilCtrlException
+     */
+    public function executeCommand() {
+		self::dic()->ui()->mainTemplate()->getStandardTemplate();
 
-		$this->tpl->addCss($this->pl->getStyleSheetLocation("default/quick_role_assignment.css"));
+		self::dic()->ui()->mainTemplate()->addCss(self::plugin()->getPluginObject()->getStyleSheetLocation("default/quick_role_assignment.css"));
 
-		$next_class = $this->ctrl->getNextClass($this);
-		if (! $this->accessCheck($next_class)) {
-			ilUtil::sendFailure($this->lng->txt("no_permission"), true);
+		$next_class = self::dic()->ctrl()->getNextClass($this);
+		if (!$this->accessCheck($next_class)) {
+			ilUtil::sendFailure(self::dic()->language()->txt("no_permission"), true);
 			ilUtil::redirect("");
+
 			return false;
 		}
 
@@ -57,29 +49,34 @@ class ilQuickRoleAssignmentGUI {
 			case '':
 			case 'srquickroleassignmentrolegui':
 				$gui = new srQuickRoleAssignmentRoleGUI();
-				$this->ctrl->forwardCommand($gui);
+				self::dic()->ctrl()->forwardCommand($gui);
 				break;
 			default:
-				require_once($this->ctrl->lookupClassPath($next_class));
+				require_once(self::dic()->ctrl()->lookupClassPath($next_class));
 				$gui = new $next_class();
-				$this->ctrl->forwardCommand($gui);
+				self::dic()->ctrl()->forwardCommand($gui);
 				break;
 		}
+		self::dic()->ui()->mainTemplate()->show();
 
 		return true;
 	}
 
 
-	protected function accessCheck($next_class) {
+    /**
+     * @param $next_class
+     * @return bool
+     */
+    protected function accessCheck($next_class) {
 		switch ($next_class) {
 			case '':
 			case 'srquickroleassignmentrolegui':
-				return $this->access->hasCurrentUserViewPermission();
+				return self::plugin()->getPluginObject()->getAccessManager()->hasCurrentUserViewPermission();
 				break;
 		}
+
 		return false;
 	}
-
 }
 
 ?>
