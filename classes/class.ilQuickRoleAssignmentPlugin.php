@@ -1,6 +1,8 @@
 <?php
 require_once __DIR__ . "/../vendor/autoload.php";
+use ILIAS\GlobalScreen\Scope\MainMenu\Provider\AbstractStaticPluginMainMenuProvider;
 use srag\DIC\QuickRoleAssignment\DICTrait;
+use srag\Plugins\QuickRoleAssignment\Menu\Menu;
 /**
  * ilQuickRoleAssignmentPlugin
  *
@@ -9,6 +11,8 @@ use srag\DIC\QuickRoleAssignment\DICTrait;
  *
  */
 class ilQuickRoleAssignmentPlugin extends ilUserInterfaceHookPlugin {
+
+	use DICTrait;
 
 	//const CRONJOB_AUTH_TOKEN = "8d641029d094c05947ed9b3566d5b959cc643136";
 
@@ -150,6 +154,12 @@ class ilQuickRoleAssignmentPlugin extends ilUserInterfaceHookPlugin {
 		var_dump($output);
 		var_dump($exit);
 	} */
+
+
+	public function promoteGlobalScreenProvider() : AbstractStaticPluginMainMenuProvider
+	{
+		return new Menu(self::dic()->dic(), $this);
+	}
 }
 
 ?>
