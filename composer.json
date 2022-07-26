@@ -1,6 +1,6 @@
 {
   "support": {
-    "email": "info@studer-raimann.ch"
+    "email": "support@fluxlabs.ch"
   },
   "minimum-stability": "beta",
   "prefer-stable": true,
@@ -10,12 +10,11 @@
     "srag/librariesnamespacechanger": ">=0.1.0"
   },
   "autoload": {
+    "psr-4": {
+      "srag\\Plugins\\QuickRoleAssignment\\": "src/"
+    },
     "classmap": [
-      "./classes/",
-      "../../../../../../../Services/UIComponent",
-      "../../../../../../../Services/Component",
-      "../../../../../../../Services/Form",
-      "../../../../../../../Services/Table"
+      "./classes/"
     ]
   },
   "config": {

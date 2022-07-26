@@ -33,7 +33,7 @@ class ilQuickRoleAssignmentGUI {
      * @throws ilCtrlException
      */
     public function executeCommand() {
-		self::dic()->ui()->mainTemplate()->getStandardTemplate();
+		self::dic()->ui()->mainTemplate()->loadStandardTemplate();
 
 		self::dic()->ui()->mainTemplate()->addCss(self::plugin()->getPluginObject()->getStyleSheetLocation("default/quick_role_assignment.css"));
 
@@ -57,7 +57,7 @@ class ilQuickRoleAssignmentGUI {
 				self::dic()->ctrl()->forwardCommand($gui);
 				break;
 		}
-		self::dic()->ui()->mainTemplate()->show();
+		self::dic()->ui()->mainTemplate()->printToStdout();
 
 		return true;
 	}
